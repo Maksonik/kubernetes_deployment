@@ -30,14 +30,16 @@ spec:
             - --workers=4
             - --worker-class=uvicorn.workers.UvicornWorker
             - --bind=0.0.0.0:8000
+            - --log-level=INFO
+            - --access-logfile=-
           livenessProbe:
             httpGet:
               path: /v1/healthcheck
               port: 8000
-            initialDelaySeconds: 15     # Дать приложению стартовать
-            periodSeconds: 10           # Проверять не слишком часто
-            timeoutSeconds: 5           # Ждать до 5 секунд на ответ
-            failureThreshold: 5
+            initialDelaySeconds: 5
+            periodSeconds: 30
+            timeoutSeconds: 20
+            failureThreshold: 2
           env:
             - name: LOG_LEVEL
               value: "INFO"
