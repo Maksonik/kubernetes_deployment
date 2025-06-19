@@ -6,3 +6,8 @@ patches:
     target:
       kind: Deployment
       name: myapp
+
+secretGenerator:
+  - envs:
+      - secret.env
+    name: secret

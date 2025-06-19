@@ -1,0 +1,7 @@
+resources:
+  - prometheus-deployment.yaml
+  - prometheus-service.yaml
+  - prometheus-configmap.yaml
+  - grafana-deployment.yaml
+  - grafana-service.yaml
+  - grafana-configmap.yaml
