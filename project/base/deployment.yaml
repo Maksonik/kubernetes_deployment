@@ -40,9 +40,9 @@ spec:
             periodSeconds: 30
             timeoutSeconds: 20
             failureThreshold: 2
-          env:
-            - name: LOG_LEVEL
-              value: "INFO"
+          envFrom:
+            - secretRef:
+                name: secret
           volumeMounts:
             - name: logs
               mountPath: /var/log/myapp
