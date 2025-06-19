@@ -1,11 +1,19 @@
 namePrefix: prod-
 resources:
   - ../../base
+  - patches/grafana-configmap.yaml
+  - patches/promtail-config.yaml
+  - patches/prometheus-configmap.yaml
 patches:
   - path: patches/deployment.yaml
     target:
       kind: Deployment
       name: myapp
+  - path: patches/ingress.yaml
+    target:
+      kind: Ingress
+      name: myapp-ingress
+
 
 secretGenerator:
   - envs:

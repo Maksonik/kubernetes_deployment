@@ -1,0 +1,6 @@
+resources:
+  - loki-config.yaml
+  - loki-deployment.yaml
+  - loki-service.yaml
+  - promtail-daemonset.yaml
+  - promtail-serviceaccount.yaml

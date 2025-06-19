@@ -1,6 +1,9 @@
 namePrefix: stage-
 resources:
   - ../../base
+  - patches/grafana-configmap.yaml
+  - patches/promtail-config.yaml
+  - patches/prometheus-configmap.yaml
 patches:
   - path: patches/deployment.yaml
     target:

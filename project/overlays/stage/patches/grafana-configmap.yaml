@@ -14,3 +14,11 @@ data:
         url: http://stage-prometheus:9090
         isDefault: true
         editable: true
+  loki-datasource.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Loki
+        type: loki
+        access: proxy
+        url: http://stage-loki:3100
+        isDefault: false
