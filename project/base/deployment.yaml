@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: myapp
-          image: maksonik/sfm:0.1.1
+          image: maksonik/sfm
           ports:
             - containerPort: 8000
           resources:
@@ -42,7 +42,7 @@ spec:
             failureThreshold: 2
           envFrom:
             - secretRef:
-                name: secret
+                name: sfm-env
           volumeMounts:
             - name: logs
               mountPath: /var/log/myapp

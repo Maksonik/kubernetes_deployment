@@ -1,0 +1,76 @@
+stages:
+  - prepare
+  - deploy
+
+
+variables:
+  FF_TIMESTAMPS: "true"
+
+  DEPLOY_ENV:
+    description: "Environment to deploy to"
+    options:
+      - stage
+      - prod
+    value: stage
+  DEPLOY_TAG:
+    description: "Image tag to deploy"
+    value: ''
+
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline" || $CI_PIPELINE_SOURCE == "web" # default mode
+      variables:
+        DRY_RUN: none
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_MERGE_REQUEST_IID  # dry-run mode
+      variables:
+        DRY_RUN: client
+
+
+.deploy:
+  image:
+    name: $EC_DEPLOYER_IMAGE
+    pull_policy: always
+
+  before_script:
+    - echo "DEPLOY_ENV=$DEPLOY_ENV" && test -n "$DEPLOY_ENV"
+    - echo "DEPLOY_TAG=$DEPLOY_TAG" && test -n "$DEPLOY_TAG"
+    - sed -i '' -e "s|\$(DEPLOY_TAG)|${DEPLOY_TAG}|" "project/overlays/${DEPLOY_ENV}/kustomization.yaml"
+
+    # prepare k8s env and secret files
+    - cp "${!DEPLOY_ENV}" "$KUSTOMIZE_BUILD_ENV_PATH/secret.env"
+
+  script:
+    - kustomize build $KUSTOMIZE_BUILD_PATH > deployment.yaml
+    - kubectl apply --dry-run=$DRY_RUN -f deployment.yaml
+    - |
+      kubectl rollout status --timeout=5m \
+        deployment/$K8S_NAMESPACE-myapp \
+        deployment/$K8S_NAMESPACE-grafana \
+        deployment/$K8S_NAMESPACE-prometheus
+
+  variables:
+    KUSTOMIZE_BUILD_PATH: project/overlays/${DEPLOY_ENV}
+    KUSTOMIZE_BUILD_ENV_PATH: project/base/_env
+    K8S_NAMESPACE: $DEPLOY_ENV
+
+dry_run:
+  stage: deploy
+  extends: .deploy
+
+  rules:
+    - if: $DRY_RUN != "none"
+      variables:
+        DEPLOY_ENV: 'stage'
+        DEPLOY_TAG: '<notag>'
+
+deploy:
+  stage: deploy
+  extends: .deploy
+  interruptible: false
+
+  environment:
+    name: $DEPLOY_ENV
+
+  rules:
+    - if: $DRY_RUN == "none"

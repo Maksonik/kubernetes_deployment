@@ -5,3 +5,4 @@ resources:
   - ingress.yaml
   - monitoring
   - logging
+  - _env

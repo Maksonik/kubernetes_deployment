@@ -14,8 +14,6 @@ patches:
       kind: Ingress
       name: myapp-ingress
 
-
-secretGenerator:
-  - envs:
-      - secret.env
-    name: secret
+images:
+  - name: maksonik/sfm
+    newTag: $(DEPLOY_TAG)
